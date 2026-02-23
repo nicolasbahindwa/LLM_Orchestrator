@@ -42,31 +42,31 @@ Without an orchestrator, production LLM apps usually end up with:
 Install from your GitHub repo:
 
 ```bash
-pip install "git+https://github.com/<your-user>/<your-repo>.git@main"
+pip install "git+https://github.com/nicolasbahindwa/LLM_Orchestrator.git@main"
 ```
 
 Pin to a release tag (recommended):
 
 ```bash
-pip install "git+https://github.com/<your-user>/<your-repo>.git@v0.2.0"
+pip install "git+https://github.com/nicolasbahindwa/LLM_Orchestrator.git@v0.2.0"
 ```
 
 With extras:
 
 ```bash
-pip install "llm-orchestrator[all] @ git+https://github.com/<your-user>/<your-repo>.git@v0.2.0"
+pip install "llm-orchestrator[all] @ git+https://github.com/nicolasbahindwa/LLM_Orchestrator.git@v0.2.0"
 ```
 
 Observability-only extras:
 
 ```bash
-pip install "llm-orchestrator[observability] @ git+https://github.com/<your-user>/<your-repo>.git@v0.2.0"
+pip install "llm-orchestrator[observability] @ git+https://github.com/nicolasbahindwa/LLM_Orchestrator.git@v0.2.0"
 ```
 
 `requirements.txt` example:
 
 ```txt
-llm-orchestrator @ git+https://github.com/<your-user>/<your-repo>.git@v0.2.0
+llm-orchestrator @ git+https://github.com/nicolasbahindwa/LLM_Orchestrator.git@v0.2.0
 ```
 
 ## Quick Start
@@ -270,8 +270,8 @@ Contribution ideas:
 Typical workflow:
 
 ```bash
-git clone <repo-url>
-cd llm_orchestrator
+git clone https://github.com/nicolasbahindwa/LLM_Orchestrator.git
+cd LLM_Orchestrator
 python -m pip install -e ".[dev]"
 python -m pytest -q
 ```

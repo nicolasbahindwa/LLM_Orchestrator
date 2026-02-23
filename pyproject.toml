@@ -29,6 +29,11 @@ dependencies = [
     "PyYAML>=6.0.1",
 ]
 
+[project.urls]
+Homepage = "https://github.com/nicolasbahindwa/LLM_Orchestrator"
+Repository = "https://github.com/nicolasbahindwa/LLM_Orchestrator"
+Issues = "https://github.com/nicolasbahindwa/LLM_Orchestrator/issues"
+
 
 [project.scripts]
 llm-orchestrator-init = "llm_orchestrator.cli:main"
