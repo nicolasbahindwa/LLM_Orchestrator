@@ -1,0 +1,85 @@
+# ============================================================
+# llm_orchestrator - Git Ignore
+# ============================================================
+
+# Local secrets and env overrides
+.env
+.env.*
+!example.env
+
+# Python bytecode and interpreter artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Build, packaging, and distribution artifacts
+build/
+dist/
+site/
+*.egg
+*.egg-info/
+.eggs/
+pip-wheel-metadata/
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Test and coverage artifacts
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+*.cover
+*.py,cover
+
+# Type checker / linter caches
+.mypy_cache/
+.pytype/
+.pyre/
+.ruff_cache/
+.dmypy.json
+
+# Tooling / automation caches
+.tox/
+.nox/
+.hypothesis/
+.cache/
+
+# Editor and IDE files
+.vscode/
+.idea/
+*.iml
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# OS junk
+.DS_Store
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Logs and runtime dumps
+*.log
+*.out
+*.err
+*.pid
+*.pid.lock
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+
+# Local build validation artifacts used in this repo
+.build*/
+
+# Misc accidental local files
+nul

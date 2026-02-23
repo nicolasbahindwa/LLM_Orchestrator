@@ -1,0 +1,227 @@
+﻿# LLM Orchestrator Configuration (Optimized & Minimal)
+# This is a standalone config - no dependencies on project structure!
+
+# -----------------------------------------------------------------------------
+# MODELS (Catalog with complexity/cost/speed/quality metadata)
+# -----------------------------------------------------------------------------
+models:
+  # Format: model_name: {provider, complexity, cost, speed, quality, pricing}
+
+  # Anthropic Models
+  claude-opus-4-20250514:
+    provider: anthropic
+    complexity_level: very_complex
+    cost_tier: expensive
+    speed_tier: medium
+    quality_tier: best
+    max_tokens: 8192
+    context_window: 200000
+    input_price_per_million: 15.00
+    output_price_per_million: 75.00
+
+  claude-sonnet-4-20250514:
+    provider: anthropic
+    complexity_level: complex
+    cost_tier: balanced
+    speed_tier: fast
+    quality_tier: excellent
+    max_tokens: 8192
+    context_window: 200000
+    input_price_per_million: 3.00
+    output_price_per_million: 15.00
+
+  claude-haiku-4-20250514:
+    provider: anthropic
+    complexity_level: simple
+    cost_tier: cheap
+    speed_tier: very_fast
+    quality_tier: good
+    max_tokens: 4096
+    context_window: 200000
+    input_price_per_million: 0.25
+    output_price_per_million: 1.25
+
+  # OpenAI Models
+  gpt-4o:
+    provider: openai
+    complexity_level: very_complex
+    cost_tier: expensive
+    speed_tier: medium
+    quality_tier: best
+    max_tokens: 4096
+    context_window: 128000
+    input_price_per_million: 5.00
+    output_price_per_million: 15.00
+
+  gpt-4o-mini:
+    provider: openai
+    complexity_level: moderate
+    cost_tier: cheap
+    speed_tier: fast
+    quality_tier: good
+    max_tokens: 4096
+    context_window: 128000
+    input_price_per_million: 0.15
+    output_price_per_million: 0.60
+
+  # Google Gemini Models (5TH PROVIDER! - Added with ZERO factory changes!)
+  gemini-pro:
+    provider: google
+    complexity_level: complex
+    cost_tier: cheap
+    speed_tier: fast
+    quality_tier: excellent
+    max_tokens: 8192
+    context_window: 32000
+    input_price_per_million: 0.50
+    output_price_per_million: 1.50
+
+  gemini-1.5-flash:
+    provider: google
+    complexity_level: moderate
+    cost_tier: cheap
+    speed_tier: very_fast
+    quality_tier: good
+    max_tokens: 8192
+    context_window: 1000000  # 1M tokens!
+    input_price_per_million: 0.075
+    output_price_per_million: 0.30
+
+  # Ollama Models (FREE! Local hosting)
+  llama3.2:
+    provider: ollama
+    complexity_level: moderate
+    cost_tier: free
+    speed_tier: medium
+    quality_tier: good
+    max_tokens: 2048
+    context_window: 8192
+    input_price_per_million: 0.0
+    output_price_per_million: 0.0
+
+  llama3.1:latest:
+    provider: ollama
+    complexity_level: simple
+    cost_tier: free
+    speed_tier: fast
+    quality_tier: good
+    max_tokens: 2048
+    context_window: 8192
+    input_price_per_million: 0.0
+    output_price_per_million: 0.0
+
+  mixtral:
+    provider: ollama
+    complexity_level: complex
+    cost_tier: free
+    speed_tier: slow
+    quality_tier: excellent
+    max_tokens: 4096
+    context_window: 32000
+    input_price_per_million: 0.0
+    output_price_per_million: 0.0
+
+# -----------------------------------------------------------------------------
+# PROVIDERS (API credentials - use ${ENV_VAR} for secrets)
+# -----------------------------------------------------------------------------
+providers:
+  anthropic:
+    enabled: ${ANTHROPIC_ENABLED:false}
+    adapter: anthropic
+    api_key: ${ANTHROPIC_API_KEY}  # Reads from environment
+    base_url: ${ANTHROPIC_BASE_URL:https://api.anthropic.com}
+    timeout: ${ANTHROPIC_TIMEOUT:60}
+    default_model: ${ANTHROPIC_DEFAULT_MODEL:claude-sonnet-4-20250514}
+    adapter_config:
+      anthropic_version: ${ANTHROPIC_API_VERSION:2023-06-01}
+
+  openai:
+    enabled: ${OPENAI_ENABLED:true}
+    adapter: openai_compatible
+    api_key: ${OPENAI_API_KEY}
+    base_url: ${OPENAI_BASE_URL:https://api.openai.com/v1}
+    timeout: ${OPENAI_TIMEOUT:60}
+    default_model: ${OPENAI_DEFAULT_MODEL:gpt-4o-mini}
+
+  ollama:
+    enabled: ${OLLAMA_ENABLED:true}
+    adapter: ollama
+    base_url: ${OLLAMA_BASE_URL:http://localhost:11434}
+    timeout: ${OLLAMA_TIMEOUT:120}
+    default_model: ${OLLAMA_DEFAULT_MODEL:llama3.1:latest}
+# -----------------------------------------------------------------------------
+# ROUTING (How to select models)
+# -----------------------------------------------------------------------------
+routing:
+  strategy: ${ORCHESTRATOR_ROUTING_STRATEGY:balanced}  # cost, quality, speed, balanced, round_robin
+
+  # Complexity-based routing (maps task complexity 竊・allowed model levels)
+  complexity_routing:
+    enabled: true
+    simple_allows: [simple]                    # Simple tasks 竊・simple models only
+    moderate_allows: [simple, moderate]        # Moderate 竊・simple OR moderate
+    complex_allows: [moderate, complex]        # Complex 竊・moderate OR complex
+    very_complex_allows: [complex, very_complex]  # Very complex 竊・complex OR very_complex
+
+  fallback_strategy: ${ORCHESTRATOR_FALLBACK_STRATEGY:same_provider_first}
+  max_fallback_attempts: ${ORCHESTRATOR_MAX_FALLBACK_ATTEMPTS:3}
+
+# -----------------------------------------------------------------------------
+# CACHE (Avoid duplicate requests)
+# -----------------------------------------------------------------------------
+cache:
+  enabled: ${ORCHESTRATOR_CACHE_ENABLED:true}
+  backend: ${ORCHESTRATOR_CACHE_BACKEND:memory}  # memory or redis
+  ttl: ${ORCHESTRATOR_CACHE_TTL:3600}
+  max_size: ${ORCHESTRATOR_CACHE_MAX_SIZE:1000}
+
+  # Redis configuration (when backend: redis)
+  redis_host: ${ORCHESTRATOR_REDIS_HOST:localhost}
+  redis_port: ${ORCHESTRATOR_REDIS_PORT:6379}
+  redis_db: ${ORCHESTRATOR_REDIS_DB:0}
+  redis_password: ${ORCHESTRATOR_REDIS_PASSWORD}
+  redis_username: ${ORCHESTRATOR_REDIS_USERNAME}
+  redis_prefix: ${ORCHESTRATOR_REDIS_PREFIX:llm_cache:}
+  redis_max_connections: ${ORCHESTRATOR_REDIS_MAX_CONNECTIONS:50}
+  redis_socket_timeout: ${ORCHESTRATOR_REDIS_SOCKET_TIMEOUT:5}
+
+# -----------------------------------------------------------------------------
+# RESILIENCE (Circuit breaker & retries)
+# -----------------------------------------------------------------------------
+resilience:
+  circuit_breaker:
+    enabled: ${ORCHESTRATOR_CB_ENABLED:true}
+    failure_threshold: ${ORCHESTRATOR_CB_FAILURE_THRESHOLD:5}
+    recovery_timeout: ${ORCHESTRATOR_CB_RECOVERY_TIMEOUT:60}
+
+  retry:
+    enabled: ${ORCHESTRATOR_RETRY_ENABLED:true}
+    max_retries: ${ORCHESTRATOR_RETRY_MAX_RETRIES:3}
+    strategy: ${ORCHESTRATOR_RETRY_STRATEGY:exponential}
+    base_delay: ${ORCHESTRATOR_RETRY_BASE_DELAY:1.0}
+    max_delay: ${ORCHESTRATOR_RETRY_MAX_DELAY:60.0}
+
+# -----------------------------------------------------------------------------
+# MONITORING (Logging & metrics)
+# -----------------------------------------------------------------------------
+monitoring:
+  logging:
+    enabled: ${ORCHESTRATOR_LOGGING_ENABLED:true}
+    level: ${ORCHESTRATOR_LOG_LEVEL:INFO}
+    format: ${ORCHESTRATOR_LOG_FORMAT:json}
+    output: ${ORCHESTRATOR_LOG_OUTPUT:stdout}
+
+  metrics:
+    enabled: ${ORCHESTRATOR_METRICS_ENABLED:true}
+    track_costs: ${ORCHESTRATOR_METRICS_TRACK_COSTS:true}
+    track_latency_percentiles: ${ORCHESTRATOR_METRICS_TRACK_LATENCY_PERCENTILES:true}
+    prometheus_enabled: ${ORCHESTRATOR_PROMETHEUS_ENABLED:false}
+    prometheus_host: ${ORCHESTRATOR_PROMETHEUS_HOST:0.0.0.0}
+    prometheus_port: ${ORCHESTRATOR_PROMETHEUS_PORT:9464}
+    prometheus_start_http_server: ${ORCHESTRATOR_PROMETHEUS_START_HTTP_SERVER:true}
+    otel_enabled: ${ORCHESTRATOR_OTEL_ENABLED:false}
+    otel_service_name: ${ORCHESTRATOR_OTEL_SERVICE_NAME:llm-orchestrator}
+    otel_exporter_endpoint: ${ORCHESTRATOR_OTEL_EXPORTER_ENDPOINT:}
+    otel_exporter_insecure: ${ORCHESTRATOR_OTEL_EXPORTER_INSECURE:true}
+    sinks: ${ORCHESTRATOR_OBSERVABILITY_SINKS:}
+
